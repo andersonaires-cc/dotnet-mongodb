@@ -25,7 +25,25 @@ namespace CrudMongoApi.Service
 
         public async Task CreateAsync(Item item) => await _itemsCollection.InsertOneAsync(item);
 
-        public async Task UpdateAsync(string id, Item item) => await _itemsCollection.ReplaceOneAsync(i => i.Id == id, item);
+        public async Task<Item?> UpdateAsync(string id, Item item)
+        {
+            // Garante que o ID do objeto a ser atualizado seja consistente com o filtro
+            item.Id = id;
+
+            // Realiza a substituição
+            var result = await _itemsCollection.ReplaceOneAsync(i => i.Id == id, item);
+
+            // Verifica se algum documento foi modificado
+            if (result.ModifiedCount > 0)
+            {
+                // Retorna o item atualizado
+                return await _itemsCollection.Find(i => i.Id == id).FirstOrDefaultAsync();
+            }
+
+            // Retorna null se nenhum documento foi encontrado ou modificado
+            return null;
+        }
+
 
         public async Task DeleteAsync(string id) => await _itemsCollection.DeleteOneAsync(i => i.Id == id);
 

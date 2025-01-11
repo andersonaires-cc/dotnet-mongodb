@@ -35,11 +35,25 @@ namespace CrudMongoApi.Controller
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, Item item)
+        public async Task<IActionResult> Update(string id, [FromQuery] string Name, [FromQuery] string Description)
         {
-            await _itemService.UpdateAsync(id, item);
-            return NoContent();
+            var item = new Item
+            {
+                Id = id,
+                Name = Name,
+                Description = Description
+            };
+
+            var updatedItem = await _itemService.UpdateAsync(id, item);
+
+            if (updatedItem is null)
+            {
+                return NotFound(new { Message = "Item not found or could not be updated." });
+            }
+
+            return Ok(updatedItem);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
