@@ -45,7 +45,15 @@ namespace CrudMongoApi.Service
         }
 
 
-        public async Task DeleteAsync(string id) => await _itemsCollection.DeleteOneAsync(i => i.Id == id);
+        public async Task<List<Item>> DeleteAsync(string id)
+        {
+            // Deleta o item com o ID correspondente
+            await _itemsCollection.DeleteOneAsync(i => i.Id == id);
+
+            // Retorna a lista atualizada de itens
+            return await _itemsCollection.Find(_ => true).ToListAsync();
+        }
+
 
 
     }

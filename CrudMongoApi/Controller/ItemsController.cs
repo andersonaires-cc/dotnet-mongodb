@@ -58,8 +58,9 @@ namespace CrudMongoApi.Controller
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            await _itemService.DeleteAsync(id);
-            return NoContent();
+            var updatedItems = await _itemService.DeleteAsync(id);
+
+            return Ok(updatedItems);
         }
 
     }
